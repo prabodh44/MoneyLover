@@ -3,6 +3,54 @@
 {% block content %}
 
 
-This is the transaction list page
+<h1 class="mb-4">Transaction List </h1>
+   <form action="{% url 'transactions' %}" method="POST">
+    {% csrf_token %}
+    Filter:  <select class="custom-select px-2" name="txn_type">
+        <optgroup label="Expenses">
+            {% for txn_type in transaction_types|dictsort:"txn_type" %}
+                <option value="{{txn_type}}"> {{ txn_type }}</option>
+            {% endfor %}
+        </optgroup>
+
+        <optgroup label="Income">
+            <option value="salary">Salary</option>
+            <option value="bankInterest">Bank Interest</option>
+        </optgroup>
+    </select>
+    <button type="submit" class="btn btn-sm btn-dark">Filter</button>
+   </form>
+{% if transactions %}
+
+    <div class="table-responsive"> 
+        <table class="table table-hover">
+            <th>#</th>
+            <th>Transaction Date</th>
+            <th>Transaction Name</th>
+            <th>Transaction Type</th>
+            <th>Transaction Amount</th>
+            {% for transaction in transactions %}
+                <tr>
+                    <td> {{ forloop.counter }}</td>
+                    <td> {{ transaction.transaction_date|date:'SHORT_DATE_FORMAT' }}</td>
+                    <td> {{ transaction.transaction_name }}</td>
+                    <td> {{ transaction.transaction_type}}</td>
+                    <td> Rs. {{ transaction.transaction_amount }}</td>
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>Total</strong></td>
+                    <td> <strong>Rs. {{ txn_total }}</strong></td>
+                </tr>
+        </table>
+    </div>
+
+{% endif %}
+
+
+
 
 {% endblock content %}

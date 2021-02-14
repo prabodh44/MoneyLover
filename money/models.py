@@ -9,7 +9,6 @@ class User(models.Model):
     def __str__(self):
         return self.first_name
     
-       
 
 class TransactionType(models.Model):
     txn_type = models.CharField(max_length=200)
@@ -21,10 +20,10 @@ class TransactionType(models.Model):
 class Transaction(models.Model):
     transaction_name    = models.CharField(max_length=2000)
     transaction_summary = models.TextField()
-    transaction_date    = models.DateTimeField(auto_now_add=True)
+    transaction_date    = models.DateTimeField(null=False)
     transaction_amount  = models.IntegerField(blank=True)
-    user                = models.ForeignKey(User, on_delete=models.CASCADE)
-    txn_type            = models.ForeignKey(TransactionType, on_delete=models.CASCADE)
+    transaction_type    = models.CharField(max_length=200)
+    # user                = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.transaction_name
