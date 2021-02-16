@@ -1,0 +1,41 @@
+{% extends 'money/base_generic.html' %}
+{% block content %}
+
+    <form class="mt-4">
+    {% csrf_token %}
+    <h2 class="text-center mb-4">Login</h2>
+    <div class="row mb-4 mt-4">
+        <div class="col">
+        <div class="form-outline">
+            <input type="text" class="form-control" />
+            <label class="form-label" for="form3Example1">First name</label>
+        </div>
+        </div>
+        <div class="col">
+        <div class="form-outline">
+            <input type="text" class="form-control" />
+            <label class="form-label" for="form3Example2">Last name</label>
+        </div>
+        </div>
+    </div>
+
+    <!-- Email input -->
+    <div class="form-outline mb-4">
+        <input type="email" class="form-control" />
+        <label class="form-label" for="form3Example3">Email address</label>
+    </div>
+
+    <!-- Password input -->
+    <div class="form-outline mb-4">
+        <input type="password" class="form-control" />
+        <label class="form-label" for="form3Example4">Password</label>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-primary btn-block mb-4">Sign up</button>
+
+    <!-- Register buttons -->
+    <div class="text-center">
+        <p> Don't have an account? <a href="">Register</a></p>
+    </form>
+{% endblock content %}
