@@ -72,4 +72,7 @@ def transactionTypes_view(request):
         transaction_type.save()
         return redirect('index')
     return render(request, 'money/addTransactionTypes.html', {})
+
+def login_view(request):
+    return render(request, 'money/login.html', {})
     

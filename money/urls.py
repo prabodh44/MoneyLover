@@ -7,4 +7,6 @@ urlpatterns = [
     path('addTransaction', views.addTransaction_view, name="addTransaction"),
     path('transactions', views.transactions_view, name="transactions"),
     path('transactionTypes',views.transactionTypes_view, name="transactionTypes"),
+    path('login',views.login_view, name="login"),
+    
 ]

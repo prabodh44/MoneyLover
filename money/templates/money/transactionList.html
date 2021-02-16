@@ -6,7 +6,7 @@
 <h1 class="mb-4">Transaction List </h1>
    <form action="{% url 'transactions' %}" method="POST">
     {% csrf_token %}
-    Filter:  <select class="custom-select px-2" name="txn_type">
+    Filter:  <select class="custom-select px-2" name="sortBytransactionTypes">
         <optgroup label="Expenses">
             {% for txn_type in transaction_types|dictsort:"txn_type" %}
                 <option value="{{txn_type}}"> {{ txn_type }}</option>
