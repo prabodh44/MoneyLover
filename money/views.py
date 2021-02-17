@@ -75,4 +75,7 @@ def transactionTypes_view(request):
 
 def login_view(request):
     return render(request, 'money/login.html', {})
+
+def logout_view(request):
+    return render(request, "money/login.html", {})
     
