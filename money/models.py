@@ -23,6 +23,7 @@ class Transaction(models.Model):
     transaction_date    = models.DateTimeField(null=False)
     transaction_amount  = models.IntegerField(blank=True)
     transaction_type    = models.CharField(max_length=200)
+    isAnExpense         = models.CharField(max_length=1)
     # user                = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
