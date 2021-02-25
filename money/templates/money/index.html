@@ -1,18 +1,41 @@
 {% extends 'money/base.html' %}
 
 {% block content %}
-
-    this is an index <br> 
-    functionalities <br>
-    add transactions <br>
-    add transaction types <br>
-    transactions list  <br>
-    transaction details <br>
-    adding of expenese <br>
-    add expenses by type <br>
-    add users
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">
+                        {{ expenses }}
+                    </p>
+                </div>
+                <div class="card-footer text-white bg-danger">
+                    <span class="fas fa-money-bill-wave fa-2x"></span> 
+                    <span class="ml-4"> Expenses  </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">
+                        {{ incomes }}
+                    </p>
+                </div>
+                <div class="card-footer text-white bg-success">
+                    <span class="fas fa-money-bill-wave fa-2x"></span> 
+                    <span class="ml-4"> Income  </span>
+                </div>
+            </div>
+        
+        </div>
+        <div class="col-md-4">
+            
+        
+        </div>
+    </div>
+</div>
 {% endblock content %}
-
-
-
-

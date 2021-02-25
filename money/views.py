@@ -6,7 +6,18 @@ import datetime
 
 # Create your views here.
 def index_view(request):
-    return render(request, 'money/index.html', {})
+    incomes   = getSumOfAllIncomes()
+    expenses  = getSumOfAllExpenses()
+    remaining = getSumOfAllExpenses() - getSumOfAllIncomes()
+    
+    
+    context = {
+        'incomes':incomes,
+        'expenses':expenses,
+        'remaining':remaining,
+        
+    }
+    return render(request, 'money/index.html', context)
 
 def addTransaction_view(request):
     transaction_types = TransactionType.objects.all()
@@ -14,7 +25,7 @@ def addTransaction_view(request):
         txn_name = request.POST["txn_name"]
         txn_summary = request.POST["txn_summary"]
         txn_amount = request.POST["txn_amount"]
-        txn_type = request.POST["txn_type"]
+        txn_type = TransactionType.objects.get(txn_type=request.POST["txn_type"])
         
         transaction = Transaction.objects.create(
             transaction_name=txn_name,
@@ -26,12 +37,22 @@ def addTransaction_view(request):
         
         transaction.save()
         
-        transactions = Transaction.objects.all()
-        total = Transaction.objects.aggregate(Sum('transaction_amount'))
-        txn_total = total["transaction_amount__sum"]
+        transactions = Transaction.objects.filter(transaction_type__isAnExpense="yes")
+        txn_total = getSumOfAllExpenses()
 
         return render(request, 'money/transactionList.html', {'transactions':transactions, 'txn_total':txn_total, 'transaction_types':transaction_types })
     return render(request, 'money/addTransaction.html', {'transaction_types':transaction_types})
+
+def getSumOfAllExpenses():
+    total = Transaction.objects.filter(transaction_type__isAnExpense="yes").aggregate(Sum('transaction_amount'))
+    txn_total = total["transaction_amount__sum"]
+    return txn_total
+
+def getSumOfAllIncomes():
+     total = Transaction.objects.filter(transaction_type__isAnExpense="no").aggregate(Sum('transaction_amount'))
+     txn_total = total["transaction_amount__sum"]
+     return txn_total
+    
 
 def transactionList_view(request):
     transactions = Transaction.objects.all()
@@ -68,7 +89,13 @@ def listQueriesByType(transactions, sortBytransactionTypes):
 def transactionTypes_view(request):
     if request.method == "POST":
         txn_type = request.POST["txn_type"]
-        transaction_type = TransactionType.objects.create(txn_type=txn_type)
+        expenseType = request.POST["isAnExpense"]
+        if expenseType == "income":
+            isAnExpense = "no"
+        else:
+            isAnExpense = "yes"
+        
+        transaction_type = TransactionType.objects.create(txn_type=txn_type, isAnExpense=isAnExpense)
         transaction_type.save()
         return redirect('index')
     return render(request, 'money/addTransactionTypes.html', {})
