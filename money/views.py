@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from money.models import User, Transaction, TransactionType
+from django.http import JsonResponse
 
 from django.db.models import Sum
 import datetime
@@ -106,4 +107,19 @@ def login_view(request):
 
 def logout_view(request):
     return render(request, "money/login.html", {})
+
+def pie_chart_view(request):
+    labels = []
+    data = []
+    
+    querySet = Transaction.objects.order_by('-transaction_amount')[:5]
+    for q in querySet:
+        labels.append(q.transaction_name)
+        data.append(q.transaction_amount)
+        
+    return JsonResponse(data={
+        'labels':labels,
+        'data':data,
+    })
+    
     

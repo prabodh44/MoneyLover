@@ -9,5 +9,6 @@ urlpatterns = [
     path('transactionTypes',views.transactionTypes_view, name="transactionTypes"),
     path('login',views.login_view, name="login"),
     path('logout', views.logout_view, name="logout"),
+    path('pie-chart',views.pie_chart_view, name="pieChart")
     
 ]
