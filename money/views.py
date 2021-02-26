@@ -8,7 +8,7 @@ import datetime
 def index_view(request):
     incomes   = getSumOfAllIncomes()
     expenses  = getSumOfAllExpenses()
-    remaining = getSumOfAllExpenses() - getSumOfAllIncomes()
+    remaining = getSumOfAllIncomes() - getSumOfAllExpenses() 
     
     
     context = {
@@ -54,35 +54,36 @@ def getSumOfAllIncomes():
      return txn_total
     
 
-def transactionList_view(request):
-    transactions = Transaction.objects.all()
+# def transactionList_view(request):
+#     transactions = Transaction.objects.filter(transaction_type__isAnExpense="yes")
+#     txn_total = getSumOfAllExpenses()
+#     print("transaction list")
+#     print(transactions)
     
-    print("transaction types")
-    print(transaction_types)
-    context = {
-        'transactions':transactions,
-        'transaction_types':transaction_types
-    }
-    return render(request, "money/transactionList.html", context)
+     
+#     context = {
+#         'transactions':transactions,
+#         'txn_total':txn_total,
+#     }
+#     return render(request, "money/transactionList.html", context)
 
 def addTransactionType_view(request):
     return render(request, "money/addTransactionTypes.html", {})
 
 def transactions_view(request):
-    transactions = Transaction.objects.all()
+    transactions = Transaction.objects.filter(transaction_type__isAnExpense="yes")
     transaction_types = TransactionType.objects.all()
-    total = Transaction.objects.aggregate(Sum('transaction_amount'))
-    txn_total = total["transaction_amount__sum"]
+    txn_total = getSumOfAllExpenses()
     if(request.method == "POST"):
         sortBytransactionTypes = request.POST["sortBytransactionTypes"]
         transactions = listQueriesByType(transactions, sortBytransactionTypes)
-        total = Transaction.objects.filter(transaction_type=sortBytransactionTypes).aggregate(Sum('transaction_amount'))
+        total = Transaction.objects.filter(transaction_type__txn_type=sortBytransactionTypes).aggregate(Sum('transaction_amount'))
         txn_total =  total["transaction_amount__sum"]
 
-    return render(request, 'money/transactionList.html', {'transactions':transactions, 'txn_total':txn_total, 'transaction_types':transaction_types, })
+    return render(request, 'money/transactionList.html', {'transaction_types':transaction_types, 'transactions':transactions, 'txn_total':txn_total})
 
 def listQueriesByType(transactions, sortBytransactionTypes):
-    sortedTransactions = transactions.filter(transaction_type=sortBytransactionTypes)
+    sortedTransactions = transactions.filter(transaction_type__txn_type=sortBytransactionTypes)
     return sortedTransactions
 
 

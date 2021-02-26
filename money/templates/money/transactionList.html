@@ -8,14 +8,19 @@
     {% csrf_token %}
     Filter:  <select class="custom-select px-2" name="sortBytransactionTypes">
         <optgroup label="Expenses">
-            {% for txn_type in transaction_types|dictsort:"txn_type" %}
-                <option value="{{txn_type}}"> {{ txn_type }}</option>
+            {% for txn_type in transaction_types %}
+                {% if txn_type.isAnExpense == "yes" %}
+                 <option value="{{ txn_type }}"> {{ txn_type }}</option>
+               {% endif %}
             {% endfor %}
         </optgroup>
 
         <optgroup label="Income">
-            <option value="salary">Salary</option>
-            <option value="bankInterest">Bank Interest</option>
+           {% for txn_type in transaction_types %}
+                {% if txn_type.isAnExpense == "no" %}
+                 <option value="{{ txn_type }}"> {{ txn_type }}</option>
+               {% endif %}
+            {% endfor %}
         </optgroup>
     </select>
     <button type="submit" class="btn btn-sm btn-dark">Filter</button>

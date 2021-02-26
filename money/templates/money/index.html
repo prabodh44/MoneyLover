@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container">
+<h1 class="py-4">Dashboard</h1>
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center text-danger">
                 <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
                     <p class="card-text">
-                        {{ expenses }}
+                        <h1>Rs. {{ expenses }} </h1>
                     </p>
                 </div>
                 <div class="card-footer text-white bg-danger">
@@ -18,11 +18,10 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center text-success">
                 <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
                     <p class="card-text">
-                        {{ incomes }}
+                        <h1>Rs.  {{ incomes }}</h1>
                     </p>
                 </div>
                 <div class="card-footer text-white bg-success">
@@ -33,7 +32,17 @@
         
         </div>
         <div class="col-md-4">
-            
+            <div class="card text-center">
+                <div class="card-body text-warning">
+                    <p class="card-text">
+                        <h1>Rs.  {{ remaining }}</h1>
+                    </p>
+                </div>
+                <div class="card-footer text-white bg-warning">
+                    <span class="fas fa-money-bill-wave fa-2x"></span> 
+                    <span class="ml-4"> Cash in Hand  </span>
+                </div>
+            </div>
         
         </div>
     </div>
