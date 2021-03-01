@@ -122,4 +122,24 @@ def pie_chart_view(request):
         'data':data,
     })
     
+def income_expense_chart(request):
+    labels = []
+    data = []
+    
+    income_expense_queries = Transaction.objects.values('transaction_type__isAnExpense').annotate(Sum('transaction_amount'))
+    labels.append('expenses')
+    labels.append('income')
+    
+    for q in income_expense_queries:
+        data.append(q.transaction_amount__sum)
+    
+    return JsonResponse(data={
+        'labels':labels,
+        'data':data,
+    })
+    
+    
+    
+    
+    
     
