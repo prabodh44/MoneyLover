@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from money.models import User, Transaction, TransactionType
 from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 from django.db.models import Sum
 import datetime
@@ -105,6 +107,36 @@ def transactionTypes_view(request):
 def login_view(request):
     return render(request, 'money/login.html', {})
 
+def register_view(request):
+    if(request.method == "POST"):
+        fname = request.POST["fname"]
+        lname = request.POST["lname"]
+        email = request.POST["email"]
+        password = request.POST["password"]
+        username = fname + lname
+        
+        if User.objects.filter(username=username).exists():
+            messages.info(request, "Username already exists")
+            
+        elif User.objects.filter(email=email):
+            messages.info(request, "Email is already registered")
+        
+        else:
+            newUser = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+                is_staff=True,
+            )
+            newUser.save()
+            return redirect('login')
+    
+        
+        
+        
+        
+    return render(request, 'money/register.html', {})
+
 def logout_view(request):
     return render(request, "money/login.html", {})
 
@@ -131,7 +163,9 @@ def income_expense_chart(request):
     labels.append('income')
     
     for q in income_expense_queries:
-        data.append(q.transaction_amount__sum)
+        data.append(q)
+        
+        # print(q.transaction_amount)
     
     return JsonResponse(data={
         'labels':labels,
