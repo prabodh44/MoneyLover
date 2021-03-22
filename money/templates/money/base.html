@@ -18,6 +18,7 @@
         <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand">MoneyLover</a>
+    <span class="text-white">{{ user }}</span>
   </div>
 </nav>
         <div class="row">
@@ -54,6 +55,13 @@
                                 <div class="media-body">
                                     <a href="{% url 'transactions' %}">
                                         <span class="mt-0 mb-1 font-weight-bold text-white">Transaction List</span>
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <a href="{% url 'logout' %}">
+                                        <span class="mt-0 mb-1 font-weight-bold text-white">Logout</span>
                                     </a>
                                 </div>
                             </li>

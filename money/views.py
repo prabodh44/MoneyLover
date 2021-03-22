@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from money.models import User, Transaction, TransactionType
+from money.models import Transaction, TransactionType
 from django.http import JsonResponse
+
 from django.contrib.auth.models import User
 from django.contrib import messages
-
+from django.contrib.auth import login, logout, authenticate
 from django.db.models import Sum
 import datetime
 
@@ -11,13 +12,13 @@ import datetime
 def index_view(request):
     incomes   = getSumOfAllIncomes()
     expenses  = getSumOfAllExpenses()
-    remaining = getSumOfAllIncomes() - getSumOfAllExpenses() 
+    #remaining = getSumOfAllIncomes() - getSumOfAllExpenses() 
     
     
     context = {
         'incomes':incomes,
         'expenses':expenses,
-        'remaining':remaining,
+        #'remaining':remaining,
         
     }
     return render(request, 'money/index.html', context)
@@ -29,6 +30,7 @@ def addTransaction_view(request):
         txn_summary = request.POST["txn_summary"]
         txn_amount = request.POST["txn_amount"]
         txn_type = TransactionType.objects.get(txn_type=request.POST["txn_type"])
+        user = User.objects.get(username=request.user.username)
         
         transaction = Transaction.objects.create(
             transaction_name=txn_name,
@@ -36,6 +38,7 @@ def addTransaction_view(request):
             transaction_date=datetime.datetime.now(),
             transaction_amount=txn_amount,
             transaction_type=txn_type,
+            user = user
         )
         
         transaction.save()
@@ -74,7 +77,7 @@ def addTransactionType_view(request):
     return render(request, "money/addTransactionTypes.html", {})
 
 def transactions_view(request):
-    transactions = Transaction.objects.filter(transaction_type__isAnExpense="yes")
+    transactions = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="yes")
     transaction_types = TransactionType.objects.all()
     txn_total = getSumOfAllExpenses()
     if(request.method == "POST"):
@@ -105,6 +108,19 @@ def transactionTypes_view(request):
     return render(request, 'money/addTransactionTypes.html', {})
 
 def login_view(request):
+    if (request.method == "POST"):
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(username=username, password=password)
+        
+        if user:
+            if user.is_active:
+                login(request, user)
+                return redirect('index')
+            else:
+                messages.info(request, "User is inactive")
+        else:
+            messages.info(request, "Email or password invalid")
     return render(request, 'money/login.html', {})
 
 def register_view(request):
@@ -113,7 +129,7 @@ def register_view(request):
         lname = request.POST["lname"]
         email = request.POST["email"]
         password = request.POST["password"]
-        username = fname + lname
+        username = request.POST["username"]
         
         if User.objects.filter(username=username).exists():
             messages.info(request, "Username already exists")
@@ -128,17 +144,17 @@ def register_view(request):
                 email=email,
                 is_staff=True,
             )
+            
+            newUser.first_name = fname
+            newUser.last_name = lname
             newUser.save()
             return redirect('login')
-    
-        
-        
-        
         
     return render(request, 'money/register.html', {})
 
 def logout_view(request):
-    return render(request, "money/login.html", {})
+    logout(request)
+    return redirect('login')
 
 def pie_chart_view(request):
     labels = []
