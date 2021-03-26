@@ -10,15 +10,15 @@ import datetime
 
 # Create your views here.
 def index_view(request):
-    incomes   = getSumOfAllIncomes()
-    expenses  = getSumOfAllExpenses()
-    #remaining = getSumOfAllIncomes() - getSumOfAllExpenses() 
+    incomes   = getSumofAllIncomesByUser(request)
+    expenses  = getSumOfAllExpensesByUser(request)
+    # remaining = incomes - expenses
     
     
     context = {
         'incomes':incomes,
         'expenses':expenses,
-        #'remaining':remaining,
+        # 'remaining':remaining,
         
     }
     return render(request, 'money/index.html', context)
@@ -53,6 +53,18 @@ def getSumOfAllExpenses():
     total = Transaction.objects.filter(transaction_type__isAnExpense="yes").aggregate(Sum('transaction_amount'))
     txn_total = total["transaction_amount__sum"]
     return txn_total
+
+def getSumOfAllExpensesByUser(request):  
+     total = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="yes").aggregate(Sum('transaction_amount'))
+     txn_total = total["transaction_amount__sum"]
+     return txn_total
+
+def getSumofAllIncomesByUser(request):
+     total = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="no").aggregate(Sum('transaction_amount'))
+     txn_total = total["transaction_amount__sum"]
+     print("=================================================")
+     print(txn_total)
+     return txn_total
 
 def getSumOfAllIncomes():
      total = Transaction.objects.filter(transaction_type__isAnExpense="no").aggregate(Sum('transaction_amount'))
@@ -116,12 +128,40 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return redirect('index')
+                hasInitialIncome = Transaction.objects.filter(user__username=request.user.username).filter(isInitialIncome="yes")
+                if hasInitialIncome:
+                    return redirect('index')
+                else:
+                    return redirect('initial_income')
             else:
                 messages.info(request, "User is inactive")
         else:
             messages.info(request, "Email or password invalid")
     return render(request, 'money/login.html', {})
+
+def initial_income_view(request):
+    if(request.method == "POST"):
+        txn_name = request.POST["txn_name"]
+        txn_summary = request.POST["txn_summary"]
+        txn_amount = request.POST["txn_amount"]
+        txn_type = TransactionType(txn_type="initial", isAnExpense="no")
+        txn_type.save()
+        user = User.objects.get(username=request.user.username)
+        
+        transaction = Transaction.objects.create(
+            transaction_name=txn_name,
+            transaction_summary=txn_summary,
+            transaction_date=datetime.datetime.now(),
+            transaction_amount=txn_amount,
+            transaction_type=txn_type,
+            user = user,
+            isInitialIncome="yes",
+        )
+        
+        transaction.save()
+        return redirect('index')
+        
+    return render(request, 'money/initial_income.html', {})
 
 def register_view(request):
     if(request.method == "POST"):

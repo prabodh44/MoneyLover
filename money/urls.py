@@ -12,4 +12,7 @@ urlpatterns = [
     path('logout', views.logout_view, name="logout"),
     path('pie-chart',views.pie_chart_view, name="pieChart"),
     path('income_expense_chart',views.income_expense_chart, name="income_expense_chart"),
+    path('initial_income',views.initial_income_view, name="initial_income"),
+    
+    
 ]
