@@ -12,13 +12,13 @@ import datetime
 def index_view(request):
     incomes   = getSumofAllIncomesByUser(request)
     expenses  = getSumOfAllExpensesByUser(request)
-    # remaining = incomes - expenses
+    remaining = incomes - expenses
     
     
     context = {
         'incomes':incomes,
         'expenses':expenses,
-        # 'remaining':remaining,
+        'remaining':remaining,
         
     }
     return render(request, 'money/index.html', context)
@@ -55,14 +55,21 @@ def getSumOfAllExpenses():
     return txn_total
 
 def getSumOfAllExpensesByUser(request):  
-     total = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="yes").aggregate(Sum('transaction_amount'))
-     txn_total = total["transaction_amount__sum"]
+     expenseList = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="yes")
+     if expenseList.exists():
+        total = expenseList.aggregate(Sum('transaction_amount')) 
+        txn_total = total["transaction_amount__sum"]   
+     else:
+         txn_total = 0
      return txn_total
 
 def getSumofAllIncomesByUser(request):
-     total = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="no").aggregate(Sum('transaction_amount'))
-     txn_total = total["transaction_amount__sum"]
-     print("=================================================")
+     incomeList = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="no")
+     if incomeList.exists():
+        total = incomeList.aggregate(Sum('transaction_amount')) 
+        txn_total = total["transaction_amount__sum"]
+     else:
+        txn_total = 0
      print(txn_total)
      return txn_total
 
@@ -129,7 +136,7 @@ def login_view(request):
             if user.is_active:
                 login(request, user)
                 hasInitialIncome = Transaction.objects.filter(user__username=request.user.username).filter(isInitialIncome="yes")
-                if hasInitialIncome:
+                if hasInitialIncome.exists():
                     return redirect('index')
                 else:
                     return redirect('initial_income')
@@ -144,8 +151,12 @@ def initial_income_view(request):
         txn_name = request.POST["txn_name"]
         txn_summary = request.POST["txn_summary"]
         txn_amount = request.POST["txn_amount"]
-        txn_type = TransactionType(txn_type="initial", isAnExpense="no")
-        txn_type.save()
+        try:
+            txn_type = TransactionType.objects.get(txn_type="initial")
+        except TransactionType.DoesNotExist:
+            txn_type = TransactionType(txn_type="initial", isAnExpense="no")
+            txn_type.save()
+
         user = User.objects.get(username=request.user.username)
         
         transaction = Transaction.objects.create(
