@@ -211,7 +211,7 @@ def pie_chart_view(request):
     labels = []
     data = []
     
-    querySet = Transaction.objects.order_by('-transaction_amount')[:5]
+    querySet = Transaction.objects.filter(user__username=request.user.username).order_by('-transaction_amount')[:5]
     for q in querySet:
         labels.append(q.transaction_name)
         data.append(q.transaction_amount)
@@ -224,15 +224,14 @@ def pie_chart_view(request):
 def income_expense_chart(request):
     labels = []
     data = []
-    
-    income_expense_queries = Transaction.objects.values('transaction_type__isAnExpense').annotate(Sum('transaction_amount'))
+    income_expense_queries = Transaction.objects.filter(user__username=request.user.username).values('transaction_type__isAnExpense').annotate(Sum('transaction_amount'))
     labels.append('expenses')
     labels.append('income')
     
     for q in income_expense_queries:
         data.append(q)
         
-        # print(q.transaction_amount)
+        print(q.transaction_amount)
     
     return JsonResponse(data={
         'labels':labels,
