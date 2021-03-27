@@ -50,11 +50,17 @@
     <div id="container">
         <div class="row">
             <div class="col-md-6">
+                <div class="card text-center">
+                <div class="card-body text-warning">
+                    <canvas id="transactionChart" data-url="{% url 'pieChart' %}"></canvas>
+                </div>
+            </div>
+            {% comment %} <div class="col-md-6">
                 <canvas id="transactionChart" data-url="{% url 'pieChart' %}"></canvas>
             </div>
             <div class="col-md-6">
                 <canvas id="incomeexpensechart" data-url="{% url 'income_expense_chart' %}"></canvas>
-            </div>
+            </div> {% endcomment %}
         </div>
     </div>
 
