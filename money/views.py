@@ -24,7 +24,7 @@ def index_view(request):
     return render(request, 'money/index.html', context)
 
 def addTransaction_view(request):
-    transaction_types = TransactionType.objects.all()
+    transaction_types = TransactionType.objects.all().exclude(txn_type="initial")
     if(request.method == "POST"):
         txn_name = request.POST["txn_name"]
         txn_summary = request.POST["txn_summary"]
