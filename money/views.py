@@ -79,33 +79,32 @@ def getSumOfAllIncomes():
      return txn_total
     
 
-# def transactionList_view(request):
-#     transactions = Transaction.objects.filter(transaction_type__isAnExpense="yes")
-#     txn_total = getSumOfAllExpenses()
-#     print("transaction list")
-#     print(transactions)
-    
-     
-#     context = {
-#         'transactions':transactions,
-#         'txn_total':txn_total,
-#     }
-#     return render(request, "money/transactionList.html", context)
-
 def addTransactionType_view(request):
     return render(request, "money/addTransactionTypes.html", {})
 
 def transactions_view(request):
-    transactions = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__isAnExpense="yes")
+    # TOOO: make two tables for income and expense
+    transactions = Transaction.objects.filter(user__username=request.user.username)
+    incomeQuery = transactions.filter(transaction_type__isAnExpense="no")
+    expenseQuery = transactions.filter(transaction_type__isAnExpense="yes")
     transaction_types = TransactionType.objects.all().exclude(txn_type="initial")
-    txn_total = getSumOfAllExpensesByUser(request)
+    expenseAmount = getSumOfAllExpensesByUser(request)
+    incomeAmount = getSumofAllIncomesByUser(request)
+    
+    context = {
+        'incomeQuery':incomeQuery,
+        'expenseQuery':expenseQuery,
+        'transaction_types':transaction_types,
+        'expenseAmount':expenseAmount,
+        'incomeAmount':incomeAmount,
+    }
     if(request.method == "POST"):
         sortBytransactionTypes = request.POST["sortBytransactionTypes"]
         transactions = listQueriesByType(transactions, sortBytransactionTypes, request.user.username)
         total = Transaction.objects.filter(user__username=request.user.username).filter(transaction_type__txn_type=sortBytransactionTypes).aggregate(Sum('transaction_amount'))
         txn_total =  total["transaction_amount__sum"]
 
-    return render(request, 'money/transactionList.html', {'transaction_types':transaction_types, 'transactions':transactions, 'txn_total':txn_total})
+    return render(request, 'money/transactionList.html', context)
 
 def listQueriesByType(transactions, sortBytransactionTypes, username):
     sortedTransactions = transactions.filter(user__username=username).filter(transaction_type__txn_type=sortBytransactionTypes)
